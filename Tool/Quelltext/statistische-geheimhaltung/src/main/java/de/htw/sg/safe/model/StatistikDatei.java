@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Table;
 
@@ -22,11 +24,14 @@ import de.htw.sg.safe.SafeUtils;
  */
 public class StatistikDatei
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatistikDatei.class);
+    
     private List<Merkmal> spalten;
     private Table<Integer, Integer, String> werte;
     
     public StatistikDatei(List<Merkmal> spalten, Table<Integer, Integer, String> werte)
     {
+        LOGGER.debug("Lege neue Statistikdatei mit {} Spalten und {} Zeilen an", spalten.size(), werte.rowKeySet().size());
         this.spalten = spalten;
         this.werte = werte;
     }

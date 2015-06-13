@@ -32,6 +32,9 @@ public class SafeClusterAnonymisierung
      */
     public StatistikDatei anonymisieren(StatistikDatei basisdatei, SafeParameter parameter)
     {
+        LOGGER.info("Neuer SAFE-Anonymisierungstask. Parameter: " + parameter);
+        LOGGER.info("Anonymisiere Datei mit {} Zeilen und {} Spalten.", basisdatei.getWerte().rowKeySet().size(), basisdatei.getWerte().columnKeySet().size());
+        
         validiereParameter(basisdatei, parameter);
      
         Set<List<Integer>> clusterListe = new HashSet<List<Integer>>();
@@ -47,6 +50,7 @@ public class SafeClusterAnonymisierung
     private StatistikDatei bestimmeBesteVereinheitlichung(
             StatistikDatei basisdatei, Set<List<Integer>> clusterListe, SafeParameter parameter)
     {
+        LOGGER.info("Bestimme aus {} Gruppierungen die beste.", clusterListe.size());
         StatistikDatei besteVereinheitlichung = null;
         for (VereinheitlichungVerfahren vereinheitlichung : parameter.getVereinheitlichungVerfahrenListe())
         {
@@ -57,6 +61,7 @@ public class SafeClusterAnonymisierung
                 besteVereinheitlichung = neueVereinheitlichung;
             }
         }  
+        LOGGER.info("Anonymisierte Datei wurde bestimmt.");
         return besteVereinheitlichung;
     }
 
@@ -79,6 +84,17 @@ public class SafeClusterAnonymisierung
         {
             throw new IllegalArgumentException("clusterverfahrenliste darf nicht leer sein");
         }
+
+        Objects.requireNonNull(parameter.getVereinheitlichungVerfahrenListe(), "VereinheitlichungVerfahrenListe darf nicht null sein");
+        if (parameter.getVereinheitlichungVerfahrenListe().isEmpty())
+        {
+            throw new IllegalArgumentException("VereinheitlichungVerfahrenListe darf nicht leer sein");
+        }
+        
+        if (parameter.getMinGruppenGroesse() < 3)
+        {
+            throw new IllegalArgumentException("minGruppenGroesse muss >= 3 sein");
+        }
     }
 
     private void berechneCluster(StatistikDatei basisdatei, Set<List<Integer>> clusterListe,
@@ -86,8 +102,15 @@ public class SafeClusterAnonymisierung
     {
         LOGGER.info("Verwende Clusterverfahren: " + clusterVerfahren.getClass().getName());
         
-        addGefiltertToClusterListe(clusterListe, clusterVerfahren.cluster(basisdatei.bestimmeMetrischeMerkmalMatrix()), parameter);
-        addGefiltertToClusterListe(clusterListe, clusterVerfahren.cluster(basisdatei.bestimmeZuordnungsmatrixMitAllenMerkmalen().getMatrix()), parameter);
+        if (!basisdatei.getKategorialenMerkmale().isEmpty())
+        {
+            addGefiltertToClusterListe(clusterListe, clusterVerfahren.cluster(basisdatei.bestimmeZuordnungsmatrixMitAllenMerkmalen().getMatrix()), parameter);
+
+            if (!basisdatei.getMetrischenMerkmale().isEmpty())
+            {
+                addGefiltertToClusterListe(clusterListe, clusterVerfahren.cluster(basisdatei.bestimmeMetrischeMerkmalMatrix()), parameter);
+            }
+        }
     }
 
     private void addGefiltertToClusterListe(Set<List<Integer>> clusterListe, List<List<Integer>> cluster, SafeParameter parameter)

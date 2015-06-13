@@ -73,6 +73,7 @@ public class TestSafeAnonymisierung
             
         parameter.setClusterVerfahrenListe(Arrays.asList(new KMeansPlusPlusRealMatrixClusterVerfahren(10)));
         parameter.setVereinheitlichungVerfahrenListe(Arrays.asList(new VereinheitlichungVerfahren(new ArithmetischeMittelwertVereinheitlichung(), new HaeufigstesMerkmalVereinheitlichung())));
+        parameter.setMinGruppenGroesse(3);
         
         return parameter;
     }

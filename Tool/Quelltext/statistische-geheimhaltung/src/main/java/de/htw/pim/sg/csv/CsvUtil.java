@@ -162,7 +162,7 @@ public class CsvUtil {
     // csv seperators
     public static final char SEPARATOR_SEMICOLON = ';';
     public static final char SEPARATOR_TABULATOR = '\t';
-    public static final char SEPERATOR_COMMA = ',';
+    public static final char SEPARATOR_COMMA = ',';
     
     // error messages
     public static final String PROBLEM_READING_CSV_DATA = "Problem beim Lesen der CSV Daten";
