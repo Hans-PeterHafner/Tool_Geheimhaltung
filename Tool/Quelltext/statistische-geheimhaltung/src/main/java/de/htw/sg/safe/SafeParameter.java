@@ -1,8 +1,10 @@
 package de.htw.sg.safe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.htw.sg.cluster.RealMatrixClusterVerfahren;
+import de.htw.sg.safe.normalisierung.Normalisierungsverfahren;
 import de.htw.sg.safe.vereinheitlichung.VereinheitlichungVerfahren;
 
 /**
@@ -10,9 +12,10 @@ import de.htw.sg.safe.vereinheitlichung.VereinheitlichungVerfahren;
  */
 public class SafeParameter
 {
-    private List<RealMatrixClusterVerfahren> clusterVerfahrenListe;
-    private List<VereinheitlichungVerfahren> vereinheitlichungVerfahrenListe;
+    private List<RealMatrixClusterVerfahren> clusterVerfahrenListe = new ArrayList<>();
+    private List<VereinheitlichungVerfahren> vereinheitlichungVerfahrenListe = new ArrayList<>();
     private int minGruppenGroesse = 3;
+    private Normalisierungsverfahren normalisierungsverfahren = new Studentisierung();
     
     public List<RealMatrixClusterVerfahren> getClusterVerfahrenListe()
     {
@@ -42,5 +45,15 @@ public class SafeParameter
     public void setMinGruppenGroesse(int minGruppenGroesse)
     {
         this.minGruppenGroesse = minGruppenGroesse;
+    }
+
+    public Normalisierungsverfahren getNormalisierungsverfahren()
+    {
+        return normalisierungsverfahren;
+    }
+
+    public void setNormalisierungsverfahren(Normalisierungsverfahren normalisierungsverfahren)
+    {
+        this.normalisierungsverfahren = normalisierungsverfahren;
     }
 }

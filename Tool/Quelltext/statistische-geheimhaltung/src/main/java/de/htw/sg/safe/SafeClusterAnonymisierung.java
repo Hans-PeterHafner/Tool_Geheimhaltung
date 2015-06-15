@@ -37,11 +37,13 @@ public class SafeClusterAnonymisierung
         
         validiereParameter(basisdatei, parameter);
      
+        StatistikDatei normalisierteDatei = parameter.getNormalisierungsverfahren().normalisieren(basisdatei);
+        
         Set<List<Integer>> clusterListe = new HashSet<List<Integer>>();
         
         for (RealMatrixClusterVerfahren clusterVerfahren : parameter.getClusterVerfahrenListe())
         {
-            berechneCluster(basisdatei, clusterListe, clusterVerfahren, parameter);
+            berechneCluster(normalisierteDatei, clusterListe, clusterVerfahren, parameter);
         }
         
         return bestimmeBesteVereinheitlichung(basisdatei, clusterListe, parameter);
