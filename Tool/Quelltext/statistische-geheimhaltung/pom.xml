@@ -23,6 +23,19 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>Startup.StatistischeGeheimhaltung</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -34,7 +47,7 @@
 			<scope>test</scope>
 		</dependency>
 
-        <!-- definiert u.a. lineare Datentypen (Vektoren, Matrizen) -->
+		<!-- definiert u.a. lineare Datentypen (Vektoren, Matrizen) -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
