@@ -44,7 +44,7 @@ public class TestSafeAnonymisierung
         assertFalse("anonymisierteDaten sollten != originalDaten sein", anonymisierteDaten.equals(basisdatei.getWerte()));
         assertTrue("nicht anonymisiert genug", SafeUtils.kommtJedeZeileMindestensNMalVor(anonymisierteDaten.getWerte(), 3));
     
-        CsvUtil.writeCsvFile(anonymisierteDaten.getWerte(), new File("src/test/resources/datensaetze/mikrozensus2010/mikrozensus2010anonym.csv"), ',');
+//        CsvUtil.writeCsvFile(anonymisierteDaten.getWerte(), new File("src/test/resources/datensaetze/mikrozensus2010/mikrozensus2010anonym.csv"), ',');
     }
 
     private StatistikDatei loadStatistikDatei()

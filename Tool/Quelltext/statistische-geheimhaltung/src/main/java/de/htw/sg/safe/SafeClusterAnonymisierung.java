@@ -39,7 +39,7 @@ public class SafeClusterAnonymisierung
      
         StatistikDatei normalisierteDatei = parameter.getNormalisierungsverfahren().normalisieren(basisdatei);
         
-        Set<List<Integer>> clusterListe = new HashSet<List<Integer>>();
+        Set<List<List<Integer>>> clusterListe = new HashSet<List<List<Integer>>>();
         
         for (RealMatrixClusterVerfahren clusterVerfahren : parameter.getClusterVerfahrenListe())
         {
@@ -50,17 +50,20 @@ public class SafeClusterAnonymisierung
     }
 
     private StatistikDatei bestimmeBesteVereinheitlichung(
-            StatistikDatei basisdatei, Set<List<Integer>> clusterListe, SafeParameter parameter)
+            StatistikDatei basisdatei, Set<List<List<Integer>>> clusterListe, SafeParameter parameter)
     {
         LOGGER.info("Bestimme aus {} Gruppierungen die beste.", clusterListe.size());
         StatistikDatei besteVereinheitlichung = null;
         for (VereinheitlichungVerfahren vereinheitlichung : parameter.getVereinheitlichungVerfahrenListe())
         {
-            StatistikDatei neueVereinheitlichung = vereinheitlichung.vereinheitliche(basisdatei, clusterListe);
-            
-            if (besteVereinheitlichung == null || istNeueVereinheitlichungBesser(basisdatei, besteVereinheitlichung, neueVereinheitlichung))
+            for (List<List<Integer>> cluster : clusterListe)
             {
-                besteVereinheitlichung = neueVereinheitlichung;
+                StatistikDatei neueVereinheitlichung = vereinheitlichung.vereinheitliche(basisdatei, cluster);
+                
+                if (besteVereinheitlichung == null || istNeueVereinheitlichungBesser(basisdatei, besteVereinheitlichung, neueVereinheitlichung))
+                {
+                    besteVereinheitlichung = neueVereinheitlichung;
+                }
             }
         }  
         LOGGER.info("Anonymisierte Datei wurde bestimmt.");
@@ -99,7 +102,7 @@ public class SafeClusterAnonymisierung
         }
     }
 
-    private void berechneCluster(StatistikDatei basisdatei, Set<List<Integer>> clusterListe,
+    private void berechneCluster(StatistikDatei basisdatei, Set<List<List<Integer>>> clusterListe,
             RealMatrixClusterVerfahren clusterVerfahren, SafeParameter parameter)
     {
         LOGGER.info("Verwende Clusterverfahren: " + clusterVerfahren.getClass().getName());
@@ -115,8 +118,10 @@ public class SafeClusterAnonymisierung
         }
     }
 
-    private void addGefiltertToClusterListe(Set<List<Integer>> clusterListe, List<List<Integer>> cluster, SafeParameter parameter)
+    private void addGefiltertToClusterListe(Set<List<List<Integer>>> clusterListe, List<List<Integer>> cluster, SafeParameter parameter)
     {
-        clusterListe.addAll(cluster.stream().filter(gruppe -> gruppe.size() >= parameter.getMinGruppenGroesse()).collect(Collectors.toList()));
+        List<List<Integer>> neuerCluster = cluster.stream().filter(gruppe -> gruppe.size() >= parameter.getMinGruppenGroesse()).collect(Collectors.toList());
+        clusterListe.add(neuerCluster);
+        LOGGER.info("Neuer Cluster der Größe {} hinzugefügt", neuerCluster.size());
     }
 }

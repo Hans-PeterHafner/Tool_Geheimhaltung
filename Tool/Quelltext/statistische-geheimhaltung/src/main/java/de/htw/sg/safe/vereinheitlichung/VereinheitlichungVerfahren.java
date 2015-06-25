@@ -59,7 +59,7 @@ public class VereinheitlichungVerfahren
             spaltenIndex++;
         }
         
-        return new StatistikDatei(statistikdatei.getSpalten(), vereinheitlichteTabelle);
+        return new StatistikDatei(statistikdatei.getSpalten(), vereinheitlichteTabelle, statistikdatei.getKategorialeMerkmalsauspraegungen());
     }
 
     private void uebertrageVereinheitlichteSpalte(

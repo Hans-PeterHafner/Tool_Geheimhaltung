@@ -112,12 +112,12 @@ public class SafeUtils
     private static List<Zuordnungsmatrix> bestimmeAbstandRelevanteZuordnungsmatrizen(
             StatistikDatei datei)
     {
-        List<Zuordnungsmatrix> zuordnungsmatrizen1 = datei.bestimmeNichtKombinierteZuordnungsmatrizen();
-        if (zuordnungsmatrizen1.size() > 1)
+        List<Zuordnungsmatrix> zuordnungsmatrizen = datei.bestimmeNichtKombinierteZuordnungsmatrizen();
+        if (zuordnungsmatrizen.size() > 1)
         {
-            zuordnungsmatrizen1.add(datei.bestimmeZuordnungsmatrixMitAllenMerkmalen());
+            zuordnungsmatrizen.add(datei.bestimmeZuordnungsmatrixMitAllenMerkmalen());
         }
-        return zuordnungsmatrizen1;
+        return zuordnungsmatrizen;
     }
 
     private static int berechneAbstandDerAuswertungstabellen(RealMatrix auswertungsmatrix1,
@@ -152,7 +152,14 @@ public class SafeUtils
             {
                 for (int k = 0; k < auswertungsmatrix1.getColumnDimension(); k++)
                 {
-                    abstand += Math.abs(auswertungsmatrix1.getEntry(j, k) - auswertungsmatrix2.getEntry(j, k)); 
+                    if (j < auswertungsmatrix2.getRowDimension())
+                    {
+                        abstand += Math.abs(auswertungsmatrix1.getEntry(j, k) - auswertungsmatrix2.getEntry(j, k)); 
+                    }
+                    else
+                    {
+                        abstand += Math.abs(auswertungsmatrix1.getEntry(j, k));
+                    }
                 }
             }
         }

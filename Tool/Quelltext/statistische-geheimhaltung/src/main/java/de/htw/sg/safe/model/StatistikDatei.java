@@ -2,9 +2,11 @@ package de.htw.sg.safe.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -28,14 +30,46 @@ public class StatistikDatei
     
     private List<Merkmal> spalten;
     private Table<Integer, Integer, String> werte;
+
+    private Map<Merkmal, List<String>> kategorialeMerkmalsauspraegungen;
     
     public StatistikDatei(List<Merkmal> spalten, Table<Integer, Integer, String> werte)
+    {
+        this(spalten, werte, null);
+        this.kategorialeMerkmalsauspraegungen = bestimmeKategorialeMerkmalsauspraegungen();
+    }
+    
+    public StatistikDatei(List<Merkmal> spalten,
+            Table<Integer, Integer, String> werte,
+            Map<Merkmal, List<String>> kategorialeMerkmalsauspraegungen)
     {
         LOGGER.debug("Lege neue Statistikdatei mit {} Spalten und {} Zeilen an", spalten.size(), werte.rowKeySet().size());
         this.spalten = spalten;
         this.werte = werte;
+        this.kategorialeMerkmalsauspraegungen = kategorialeMerkmalsauspraegungen;
     }
-    
+
+    private Map<Merkmal, List<String>> bestimmeKategorialeMerkmalsauspraegungen()
+    {
+        Map<Merkmal, List<String>> kategorialeMerkmalsauspraegungen = new HashMap<>();
+        
+        for (Merkmal kategorialesMerkmal : getKategorialenMerkmale())
+        {
+            Map<Integer, String> spalte = werte.column(spalten.indexOf(kategorialesMerkmal));
+            
+            Set<String> verschiedeneWerteInSpalte = new HashSet<>();
+            
+            for (Map.Entry<Integer, String> zeile : spalte.entrySet())
+            {
+                verschiedeneWerteInSpalte.add(zeile.getValue());
+            }
+            
+            kategorialeMerkmalsauspraegungen.put(kategorialesMerkmal, new ArrayList<>(verschiedeneWerteInSpalte));
+        }
+        
+        return kategorialeMerkmalsauspraegungen;
+    }
+
     /**
      * ACHTUNG - Diese Methode führt bei größeren Datenmengen zu einem Java-Heap-Space-Error,
      * weil es bei Merkmalskombinationen zu vielen Zeilen und Möglichkeiten kommt.
@@ -119,34 +153,15 @@ public class StatistikDatei
 
     private Zuordnungsmatrix bestimmeZuordnungsmatrix(Merkmal kategorialesMerkmal)
     {
+        List<String> werteFuerZuordnungsmatrix = kategorialeMerkmalsauspraegungen.get(kategorialesMerkmal);
+        
         Map<Integer, String> spalte = werte.column(spalten.indexOf(kategorialesMerkmal));
         
-        Map<String, Integer> auspraegungsTabelle = new Hashtable<>();
-        
-        /* 
-         * Alle verschiedenen Merkmalsausprägungen erfassen und einem Spaltenindex
-         * in der Zuordnungsmatrix zuordnen
-         */
-        
-        int anzahlAuspraegungen = 0;
+        Array2DRowRealMatrix matrix = new Array2DRowRealMatrix(spalte.size(), werteFuerZuordnungsmatrix.size());
         
         for (Map.Entry<Integer, String> zeile : spalte.entrySet())
         {
-            if (!auspraegungsTabelle.containsKey(zeile.getValue()))
-            {
-                auspraegungsTabelle.put(zeile.getValue(), anzahlAuspraegungen++);
-            }
-        }
-        
-        /*
-         * Jetzt kann die Zuordnungsmatrix bestimmt werden 
-         */
-        
-        Array2DRowRealMatrix matrix = new Array2DRowRealMatrix(spalte.size(), anzahlAuspraegungen);
-        
-        for (Map.Entry<Integer, String> zeile : spalte.entrySet())
-        {
-            matrix.setEntry(zeile.getKey(), auspraegungsTabelle.get(zeile.getValue()), 1);
+            matrix.setEntry(zeile.getKey(), werteFuerZuordnungsmatrix.indexOf(zeile.getValue()), 1);
         }
         
         return new Zuordnungsmatrix(kategorialesMerkmal, matrix);
@@ -269,5 +284,10 @@ public class StatistikDatei
         }
         
         return zuordnungsmatrix;
+    }
+
+    public Map<Merkmal, List<String>> getKategorialeMerkmalsauspraegungen()
+    {
+        return kategorialeMerkmalsauspraegungen;
     }
 }
