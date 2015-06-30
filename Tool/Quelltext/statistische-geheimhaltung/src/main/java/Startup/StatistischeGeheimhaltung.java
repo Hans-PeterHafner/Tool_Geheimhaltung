@@ -8,8 +8,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
 import matrixManipulation.view.View;
-
 import de.htw.pim.sg.gui.MainLauncher;
+import de.htw.sg.safe.gui.SafeClusterPanel;
 
 public class StatistischeGeheimhaltung {
 
@@ -26,6 +26,7 @@ public class StatistischeGeheimhaltung {
 		mainFrame.setMinimumSize(new Dimension(900, 600));
 		mainFrame.setResizable(true);
 		mainFrame.pack();
+		mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		mainFrame.setLocationRelativeTo(null);
 		mainFrame.setVisible(true);
 		mainFrame.setTitle("Statistische Geheimhaltung");
@@ -47,6 +48,7 @@ public class StatistischeGeheimhaltung {
 		JTabbedPane tabs = new JTabbedPane();
 		tabs.addTab("Microdaten", micro);
 		tabs.addTab("Matrixmanipulation", matrix);
+		tabs.addTab("Safe-Clustering", new SafeClusterPanel(mainFrame));
 		
 		mainFrame.add(tabs);
 		mainFrame.setVisible(true);
@@ -54,7 +56,6 @@ public class StatistischeGeheimhaltung {
 
 		new MainLauncher(micro);
 		new View(matrix);
-		
 	}
 
 }

@@ -1,9 +1,5 @@
 package de.htw.pim.sg.csv;
 
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
-import com.google.common.collect.Table;
-import de.htw.pim.sg.table.TableUtil;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -11,8 +7,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
+
+import com.google.common.collect.Table;
+
+import de.htw.pim.sg.table.TableUtil;
 
 /**
  * This class provides methods to read and write csv files
@@ -69,27 +73,42 @@ public class CsvUtil {
      * @return eine Tabelle, die die CSV Daten enthält
      */
     public static Table<Integer, Integer, String> readCsvFile(File csvFile, char separator) {
+        return readCsvFile(csvFile, separator, false);
+    }
+    
+    /**
+     * Liest eine CSV Datei in eine Tabelle ein
+     * 
+     * @param csvFile die zu lesende CSV Datei
+     * @param istErsteZeileUberschrift
+     * @return eine Tabelle, die die CSV Daten enthält
+     */
+    public static Table<Integer, Integer, String> readCsvFile(File csvFile, char separator, boolean istErsteZeileUberschrift) {
         
         Table<Integer, Integer, String> csvTable = null;
-
+        
         try {
-
+            
             // CSV Daten aus Datei lesen
             List<String[]> csvData = readCsvData(csvFile, separator);
-
+            
+            if (istErsteZeileUberschrift) {
+                csvData = csvData.subList(1, csvData.size());
+            }
+            
             // neue Tabelle erstellen
             int rows = csvData.size();
             int columns = csvData.get(0).length;
             csvTable = TableUtil.<String>newTable(rows, columns);
-
+            
             // Tabelle mit CSV Daten füllen
             csvTable = TableUtil.fillTableWithCsvData(csvTable, csvData);
-
+            
         } catch (Exception exc) {
-
+            
             _log.error(PROBLEM_READING_CSV_FILE + " " + csvFile.getAbsolutePath() + ": " + exc.getLocalizedMessage());
         }
-
+        
         return csvTable;
     }
    
@@ -143,6 +162,7 @@ public class CsvUtil {
     // csv seperators
     public static final char SEPARATOR_SEMICOLON = ';';
     public static final char SEPARATOR_TABULATOR = '\t';
+    public static final char SEPARATOR_COMMA = ',';
     
     // error messages
     public static final String PROBLEM_READING_CSV_DATA = "Problem beim Lesen der CSV Daten";

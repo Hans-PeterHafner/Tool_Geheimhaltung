@@ -1,19 +1,22 @@
 package de.htw.pim.sg.table;
 
-import com.google.common.collect.ArrayTable;
-import com.google.common.collect.Table;
-import com.google.common.collect.Tables;
-import de.htw.pim.sg.Configuration;
-import de.htw.pim.sg.table.transformer.CustomDoubleToStringTransformer;
-import de.htw.pim.sg.table.transformer.DoubleToStringTransformer;
-import de.htw.pim.sg.table.transformer.StringToDoubleTransformer;
-
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ArrayTable;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
+
+import de.htw.pim.sg.Configuration;
+import de.htw.pim.sg.table.transformer.CustomDoubleToStringTransformer;
+import de.htw.pim.sg.table.transformer.DoubleToStringTransformer;
+import de.htw.pim.sg.table.transformer.StringToDoubleTransformer;
 
 /**
  * @author Pascal Wasem
@@ -179,6 +182,19 @@ public class TableUtil {
         return indexCollection;
     }
     
+    /**
+     * Erstellt eine Kopie einer Tabelle
+     * @param tabelle wird flach kopiert
+     * @return Kopie der übergebenen Tabelle
+     */
+    public static Table<Integer, Integer, String> copyTable(Table<Integer, Integer, String> tabelle)
+    {
+        Objects.requireNonNull(tabelle, "tabelle darf nicht null sein");
+        Table<Integer, Integer, String> copy = TableUtil.<String>newTable(tabelle.rowKeySet().size(), tabelle.columnKeySet().size());
+        copy.putAll(tabelle);
+        return copy;
+    }
+    
     /* -------------------------------------------------------------------------
     constants
     --------------------------------------------------------------------------*/
@@ -186,5 +202,4 @@ public class TableUtil {
     // error messages
     private static final String PROBLEM_FILLING_TABLE        = "Problem beim Füllen der Tabelle";
     private static final String PROBLEM_CREATING_NEW_TABLE   = "Problem beim Erstellen der neuen Tabelle";
-    
 }
